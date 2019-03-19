@@ -1,45 +1,43 @@
 Name:       dtc
-Summary:    Linux Kernel device tree compiler
-Version:    0.0.0
-Provides:   dtc
+Version:    1.4.6
 Release:    1
+Summary:    Device Tree Compiler
+License:    GPLv2+
 Group:      Development/Tools
-URL:        https://git.kernel.org/pub/scm/utils/dtc/dtc.git
-Source0:    %{name}-%{version}.tar.bz2
-License:    GPLv2
+URL:        https://devicetree.org/
 
-BuildRequires: flex
-BuildRequires: bison
+Source0:    %{name}-%{version}.tar.bz2
+
+BuildRequires:     gcc
+BuildRequires:     make
+BuildRequires:     flex
+BuildRequires:     bison
+BuildRequires:     sed
 
 %description
-Linux Kernel device tree compiler
+Devicetree is a data structure for describing hardware. Rather than hard coding
+every detail of a device into an operating system, many aspects of the hardware
+can be described in a data structure that is passed to the operating system at
+boot time. The devicetree is used by OpenFirmware, OpenPOWER Abstraction Layer
+(OPAL), Power Architecture Platform Requirements (PAPR) and in the standalone
+Flattened Device Tree (FDT) form.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 cd dtc
-# We only need the compiler, no python necessary so skip it.
-make NO_PYTHON=1 HOME=$RPM_BUILD_ROOT/usr
+make %{?_smp_mflags} V=1 CC="gcc $RPM_OPT_FLAGS $RPM_LD_FLAGS" dtc
+# Drop libfdt bits from manual as we do not install it
+sed -ri '
+    /^III - libfdt$/, /^I - "dtc"/ { /^I - "dtc"/ ! d }
+' Documentation/manual.txt
 
 %install
-cd dtc
-make NO_PYTHON=1 HOME=$RPM_BUILD_ROOT/usr install
+install -d ${RPM_BUILD_ROOT}/%{_bindir}
+install dtc/dtc dtc/dtdiff ${RPM_BUILD_ROOT}/%{_bindir}
 
 %files
-%defattr(-,root,root,-)
-%{_bindir}/convert-dtsv0
-%{_bindir}/dtc
-%{_bindir}/dtdiff
-%{_bindir}/fdtdump
-%{_bindir}/fdtget
-%{_bindir}/fdtoverlay
-%{_bindir}/fdtput
-%{_includedir}/fdt.h
-%{_includedir}/libfdt.h
-%{_includedir}/libfdt_env.h
-%{_libdir}/libfdt-1.4.6.so
-%{_libdir}/libfdt.a
-%{_libdir}/libfdt.so
-%{_libdir}/libfdt.so.1
-
+%license dtc/GPL
+%doc dtc/Documentation/manual.txt
+%{_bindir}/*

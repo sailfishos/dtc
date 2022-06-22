@@ -4,7 +4,7 @@ Release:    1
 Summary:    Device Tree Compiler
 License:    GPLv2+
 Group:      Development/Tools
-URL:        https://devicetree.org/
+URL:        https://github.com/sailfishos/dtc
 
 Source0:    %{name}-%{version}.tar.bz2
 

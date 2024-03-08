@@ -1,5 +1,5 @@
 Name:       dtc
-Version:    1.4.6
+Version:    1.7.0
 Release:    1
 Summary:    Device Tree Compiler
 License:    GPLv2+
@@ -22,10 +22,9 @@ boot time. The devicetree is used by OpenFirmware, OpenPOWER Abstraction Layer
 Flattened Device Tree (FDT) form.
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-%{version}/%{name}
 
 %build
-cd dtc
 make %{?_smp_mflags} V=1 CC="gcc $RPM_OPT_FLAGS $RPM_LD_FLAGS" dtc
 # Drop libfdt bits from manual as we do not install it
 sed -ri '
@@ -34,9 +33,9 @@ sed -ri '
 
 %install
 install -d ${RPM_BUILD_ROOT}/%{_bindir}
-install dtc/dtc dtc/dtdiff ${RPM_BUILD_ROOT}/%{_bindir}
+install dtc dtdiff ${RPM_BUILD_ROOT}/%{_bindir}
 
 %files
-%license dtc/GPL
-%doc dtc/Documentation/manual.txt
+%license GPL
+%doc Documentation/manual.txt
 %{_bindir}/*
